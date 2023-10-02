@@ -18,6 +18,9 @@ RUN		adduser -D -g 'www' www &&\
 		chown -R www:www /run/nginx/ &&\
 		chown -R www:www /var/www/html/
 
+#	Informs Docker that the container is listening on the specified network port at runtime.
+#	EXPOSE does not make container ports accesible to the host.
+#	EXPOSE only exposes the specified port and makes it available only for communication between containers.
 EXPOSE	443/tcp
 
 # Run nginx with daemon off, i.e. in the foreground since one container only

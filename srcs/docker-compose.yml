@@ -1,16 +1,19 @@
+#   This file .yml allows us to give the specific instructions to docker-compose 
+#   on how to manage these different services (images)
 version: "3"
 
+# Definition of the different services (images) to use 
 services:
     nginx:
-        container_name: nginx
+        container_name: nginx # name of the container
         build:          ./requirements/nginx/
         image:          nginx:inception
-        env_file:       .env
+        env_file:       .env # defines the optional file containing the environment
         networks:
             - inception
-        ports:
+        ports:          # port in use
             - "443:443"
-        restart:        on-failure
+        restart:        on-failure  #allows the container to restart in case of crash
         volumes:
             - wordpress-data:/var/www/html/
         depends_on:
@@ -33,7 +36,7 @@ services:
         networks:
             - inception
         restart:        on-failure
-        volumes:
+        volumes:    # Path where our wordpress files are present
             - wordpress-data:/var/www/html/
         depends_on:
             - mariadb

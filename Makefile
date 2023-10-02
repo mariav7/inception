@@ -6,7 +6,7 @@
 #    By: mflores- <mflores-@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2023/09/28 14:02:21 by mflores-          #+#    #+#              #
-#    Updated: 2023/09/28 14:28:31 by mflores-         ###   ########.fr        #
+#    Updated: 2023/10/02 11:59:14 by mflores-         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -17,17 +17,19 @@ ENV			= LOGIN=${LOGIN} DATA_PATH=${DATA_PATH} DOMAIN=${LOGIN}.42.fr
 
 all: up
 
+# Run container
 up: setup
-	${ENV} docker-compose -f ./srcs/docker-compose.yaml up -d --build
+	${ENV} docker-compose -f ./srcs/docker-compose.yml up -d --build
 
 down:
-	${ENV} docker-compose -f ./srcs/docker-compose.yaml down
+	${ENV} docker-compose -f ./srcs/docker-compose.yml down
 
 start:
-	${ENV} docker-compose -f ./srcs/docker-compose.yaml start
+	${ENV} docker-compose -f ./srcs/docker-compose.yml start
 
+# Stop and remove a running container
 stop:
-	${ENV} docker-compose -f ./srcs/docker-compose.yaml stop
+	${ENV} docker-compose -f ./srcs/docker-compose.yml stop
 
 status:
 	cd srcs && docker-compose ps && cd ..
