@@ -6,14 +6,13 @@ version: "3.5"
 services:
     nginx:
         container_name: nginx # name of the container
-        build:          ./requirements/nginx/
-        image:          nginx
+        build:          requirements/nginx/
+        restart:        always #allows the container to restart in case of crash
         env_file:       .env # defines the optional file containing the environment
         networks:
             - inception
         ports:          # port in use
             - "443:443"
-        restart:        always #allows the container to restart in case of crash
         volumes:
             - wordpress-data:/var/www/html/
         depends_on:
@@ -21,29 +20,25 @@ services:
 
     mariadb:
         container_name: mariadb
-        build:          ./requirements/mariadb/
-        image:          mariadb
+        build:          requirements/mariadb/
+        restart:        always
         env_file:       .env
         networks:
             - inception
-        restart:        always
         volumes:
             - mariadb-data:/var/lib/mysql/
 
     wordpress:
         container_name: wordpress
-        build:          ./requirements/wordpress/
-        image:          wordpress
+        build:          requirements/wordpress/
+        restart:        always
         env_file:       .env
         networks:
             - inception
-        restart:        always
         volumes:    # Path where our wordpress files are present
             - wordpress-data:/var/www/html/
         depends_on:
             - mariadb
-        expose:
-            - "9000"
 
 # NETWORK
 networks:

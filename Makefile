@@ -14,9 +14,6 @@ restart :
 stop:
 	docker-compose -f ./srcs/docker-compose.yml down
 
-down:
-	@docker-compose -f ./srcs/docker-compose.yml down
-
 clean:
 	@docker rm -f $$(docker ps -qa)
 	@docker volume rm -f $$(docker volume ls)

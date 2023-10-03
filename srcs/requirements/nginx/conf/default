@@ -1,12 +1,4 @@
 server {
-    listen 80 default_server;
-    listen [::]:80 default_server;
-    server_name tliot.42.fr;
-    return 301 https://tliot.42.fr$request_uri;
-}
-
-
-server {
         listen 443 ssl default_server;
         listen [::]:443 ssl default_server;
         
@@ -18,7 +10,7 @@ server {
         root /var/www/html/wordpress;
         index index.php ;
 
-        server_name tliot.42.fr;
+        server_name mflores.42.fr;
 
         location / {
                 try_files $uri $uri/ =404;
