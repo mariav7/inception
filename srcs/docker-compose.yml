@@ -26,7 +26,7 @@ services:
         networks:
             - inception
         volumes:
-            - mariadb-data:/var/lib/mysql/
+            - mariadb-data:/var/lib/mysql
 
     wordpress:
         container_name: wordpress
@@ -36,7 +36,7 @@ services:
         networks:
             - inception
         volumes:    # Path where our wordpress files are present
-            - wordpress-data:/var/www/html/
+            - wordpress-data:/var/www/html
         depends_on:
             - mariadb
 

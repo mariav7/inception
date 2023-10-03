@@ -12,7 +12,7 @@ restart :
 	@docker-compose -f ./srcs/docker-compose.yml start
 
 stop:
-	docker-compose -f ./srcs/docker-compose.yml down
+	@docker-compose -f ./srcs/docker-compose.yml down
 
 clean:
 	@docker rm -f $$(docker ps -qa)

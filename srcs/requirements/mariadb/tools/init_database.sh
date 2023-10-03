@@ -12,7 +12,6 @@ echo "FLUSH PRIVILEGES;" | mysql
 # CREAT WORDPRESS DATABASE #
 echo "CREATE DATABASE $BDD_NAME;" | mysql
 
-
 kill $(cat /var/run/mysqld/mysqld.pid)
 
 mysqld
