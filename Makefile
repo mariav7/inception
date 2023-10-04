@@ -7,52 +7,81 @@ DB_PATH = $(addprefix $(HOME), $(DB_FOLDER))
 
 all: header
 	@echo "$(YELLOW)\n. . . Launching . . .\n$(RESET)"
-	@sudo mkdir -p $(DB_PATH)mariadb $(DB_PATH)wordpress
-	@sudo docker compose -f $(COMPOSE_FILE) up --build -d
+	@mkdir -p $(DB_PATH)mariadb $(DB_PATH)wordpress
+	@docker compose -f $(COMPOSE_FILE) up --build -d
 	@echo "$(BOLD)$(GREEN)Launched [ ✔ ]\n$(RESET)"
 
-install :
+install:
 	@echo "$(YELLOW)\n. . . apt updating && upgrading . . . \n$(RESET)"
 	@sudo apt-get update 
 	@sudo apt-get upgrade -y
 	@echo "$(BOLD)$(GREEN)apt update && upgrade [ ✔ ]\n$(RESET)"
 
-restart :
+restart:
 	@echo "$(YELLOW)\n. . . restarting containers . . . \n$(RESET)"
-	@sudo docker compose -f $(COMPOSE_FILE) stop
-	@sudo docker compose -f $(COMPOSE_FILE) start
+	@docker compose -f $(COMPOSE_FILE) stop
+	@docker compose -f $(COMPOSE_FILE) start
 	@echo "$(BOLD)$(GREEN)Containers restarted [ ✔ ]\n$(RESET)"
 
-stop:
-	@echo "$(YELLOW)\n. . . stopping containers . . . \n$(RESET)"
-	@sudo docker compose -f $(COMPOSE_FILE) down
-	@echo "$(BOLD)$(GREEN)Stopped containers [ ✔ ]\n$(RESET)"
+remove_containers:
+	@if [ -n "$$(docker ps -aq)" ]; then \
+		echo "$(YELLOW)\n. . . stopping and removing docker containers . . . \n$(RESET)"; \
+		docker compose -f $(COMPOSE_FILE) down; \
+		echo "$(BOLD)$(GREEN)Containers stopped and removed [ ✔ ]\n$(RESET)"; \
+	else \
+		echo "$(BOLD)$(RED)No Docker containers found$(RESET)"; \
+	fi
 
-clean: stop
-	@echo "$(YELLOW)\n. . . deleting volumes . . . \n$(RESET)"
-	@sudo docker volume rm $$(docker volume ls -q)
-	@echo "$(BOLD)$(GREEN)Cleaned [ ✔ ]\n$(RESET)"
+remove_volumes:
+	@if [ -n "$$(docker volume ls -q)" ]; then \
+		echo "$(YELLOW)\n. . . removing docker volumes . . . \n$(RESET)"; \
+		docker volume rm $$(docker volume ls -q); \
+		echo "$(BOLD)$(GREEN)Volumes removed [ ✔ ]\n$(RESET)"; \
+	else \
+		echo "$(BOLD)$(RED)No Docker volumes found$(RESET)"; \
+	fi
+
+remove_images:
+	@if [ -n "$$(docker images -aq)" ]; then \
+		echo "$(YELLOW)\n. . . removing docker images . . . \n$(RESET)"; \
+		docker rmi -f $$(docker images -aq); \
+		echo "$(BOLD)$(GREEN)Images removed [ ✔ ]\n$(RESET)"; \
+	else \
+		echo "$(BOLD)$(RED)No Docker images found$(RESET)"; \
+	fi
+
+clean: remove_containers remove_volumes remove_images
+	@echo "$(BOLD)$(GREEN)cleaned [ ✔ ]\n$(RESET)"
 
 fclean: clean
-	@echo "$(YELLOW)\n. . . deleting images . . . \n$(RESET)"
-	@sudo docker rmi -f $$(docker images -aq)
-	@sudo rm -rdf $(DB_PATH)
-	@echo "$(BOLD)$(GREEN)Fcleaned [ ✔ ]\n$(RESET)"
+	@if [ -d $(DB_PATH) ]; then \
+		echo "$(YELLOW)\n. . . deleting $(DB_PATH) . . . \n$(RESET)"; \
+		rm -rdf $(DB_PATH); \
+	else \
+		echo "$(BOLD)$(RED)No $(DB_PATH) found$(RESET)"; \
+	fi
+	@echo "$(BOLD)$(GREEN)fcleaned [ ✔ ]\n$(RESET)"
 
 re: fclean all
 
 prune:
 	@echo "$(YELLOW)\n. . . pruning . . . \n$(RESET)"
-	@sudo docker system prune -fa
+	@docker system prune -fa
 	@echo "$(BOLD)$(GREEN)Pruned [ ✔ ]\n$(RESET)"
 
-.PHONY: all install restart stop down clean fclean re prune header check-isclean
+.PHONY: all install restart remove_containers remove_volumes remove_images \
+		clean fclean re prune header check-status
 
-check-isclean:
+check-status:
 	@echo "$(YELLOW)docker ps -a $(RESET)" && docker ps -a
-	@echo "$(YELLOW)docker images -a $(RESET)" && docker images -a
 	@echo "$(YELLOW)docker volume ls $(RESET)" && docker volume ls
+	@echo "$(YELLOW)docker images -a $(RESET)" && docker images -a
 	@echo "$(YELLOW)docker network ls $(RESET)" && docker network ls
+	@if [ -d $(DB_PATH) ]; then \
+		echo "$(YELLOW)ls -la $(DB_PATH) $(RESET)" && ls -la $(DB_PATH); \
+	else \
+		echo "No $(DB_PATH) found."; \
+	fi
 
 define HEADER_PROJECT
 
