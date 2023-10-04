@@ -56,7 +56,7 @@ clean: remove_containers remove_volumes remove_images
 fclean: clean
 	@if [ -d $(DB_PATH) ]; then \
 		echo "$(YELLOW)\n. . . deleting $(DB_PATH) . . . \n$(RESET)"; \
-		rm -rdf $(DB_PATH); \
+		sudo rm -rdf $(DB_PATH); \
 	else \
 		echo "$(BOLD)$(RED)No $(DB_PATH) found$(RESET)"; \
 	fi
@@ -80,7 +80,7 @@ check-status:
 	@if [ -d $(DB_PATH) ]; then \
 		echo "$(YELLOW)ls -la $(DB_PATH) $(RESET)" && ls -la $(DB_PATH); \
 	else \
-		echo "No $(DB_PATH) found."; \
+		echo "$(YELLOW)ls -la $(DB_PATH) \n$(RESET)No $(DB_PATH) found."; \
 	fi
 
 define HEADER_PROJECT

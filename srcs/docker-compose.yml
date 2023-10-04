@@ -7,36 +7,39 @@ services:
     nginx:
         container_name: nginx # name of the container
         build:          requirements/nginx/
-        restart:        always #allows the container to restart in case of crash
+        image:          nginx
+        restart:        always # allows the container to restart in case of crash
         env_file:       .env # defines the optional file containing the environment
         networks:
             - inception
         ports:          # port in use
             - "443:443"
         volumes:
-            - wordpress-data:/var/www/html/
+            - wordpress:/var/www/html/
         depends_on:
             - wordpress
 
     mariadb:
         container_name: mariadb
         build:          requirements/mariadb/
+        image:          mariadb
         restart:        always
         env_file:       .env
         networks:
             - inception
         volumes:
-            - mariadb-data:/var/lib/mysql
+            - mariadb:/var/lib/mysql
 
     wordpress:
         container_name: wordpress
         build:          requirements/wordpress/
+        image:          wordpress
         restart:        always
         env_file:       .env
         networks:
             - inception
-        volumes:    # Path where our wordpress files are present
-            - wordpress-data:/var/www/html
+        volumes:    # Path where our WordPress files are present
+            - wordpress:/var/www/html
         depends_on:
             - mariadb
 
@@ -48,16 +51,18 @@ networks:
 
 # VOLUMES
 volumes:
-  mariadb-data:
+  mariadb:
+    name: mariadb
     driver: local
     driver_opts:
-      type: 'none'
-      o: 'bind'
       device: /home/mflores-/data/mariadb
+      type: none
+      o: bind   # Bind Mounts are volumes that mount on a host path, and they can be modified by other processes outside of Docker.
 
-  wordpress-data:
+  wordpress:
+    name: wordpress
     driver: local
     driver_opts:
-      type: 'none'
-      o: 'bind'
       device: /home/mflores-/data/wordpress
+      type: none
+      o: bind

@@ -8,23 +8,25 @@ RUN apt-get install nginx openssl -y
 # -x509 refers to the certificate's type
 # -out and -keyout parameters refers to where the certificate will be saved
 # -subj refers to the command response (Country, State, Locality, Organization name, Organizational Unit name, Common Name)
-RUN openssl req \
-            -x509 \
-            -nodes \
-            -days 365 \
-            -newkey rsa:2048 \
-            -keyout /etc/ssl/private/nginx-selfsigned.key \
-            -out /etc/ssl/certs/nginx-selfsigned.crt \
-            -subj '/C=FR/ST=Ile-de-France/L=Paris/O=42/OU=42Paris/CN=mflores.42.fr'
+# RUN openssl req \
+#             -x509 \
+#             -nodes \
+#             -days 365 \
+#             -newkey rsa:2048 \
+#             -keyout ${CERTS_KEYOUT} \
+#             -out ${CERTS_OUT} \
+#             -subj ${CERT_SUBJ}
 
-RUN echo "ssl_certificate /etc/ssl/certs/nginx-selfsigned.crt;\nssl_certificate_key /etc/ssl/private/nginx-selfsigned.key;" > /etc/nginx/snippets/self-signed.conf
+#COPY ./conf/nginx.conf /etc/nginx/
 
-RUN openssl dhparam -out /etc/nginx/dhparam.pem 2048
+#   Copy the script in the images and modify the execution rights of it
+COPY ./tools/nginx_script.sh /tmp/
 
-COPY ./conf/ssl-params.conf /etc/nginx/snippets/
+#   Make sure that we can execute the script
+RUN chmod +x /tmp/nginx_script.sh
 
-COPY ./conf/default    /etc/nginx/sites-available/
+CMD [ "/tmp/nginx_script.sh" ]
 
 # Run nginx with daemon off, i.e. in the foreground since one container only
 # has one service. This is best practice for Docker containers and/or debugging.
-CMD ["nginx", "-g", "daemon off;"]
+#CMD ["nginx", "-g", "daemon off;"]
