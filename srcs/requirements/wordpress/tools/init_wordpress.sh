@@ -9,6 +9,7 @@ if [ ! -d "/run/php" ]; then
 	touch /run/php/php7.3-fpm.pid
 fi
 
+cd /var/www/html
 echo "Checking for wordpress installation..."
 # Download wordpress if isn't already done
 if [ ! -f "wp-config-sample.php" ]; then

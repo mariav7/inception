@@ -27,7 +27,7 @@ RUN chmod +x /var/www/init_wordpress.sh
 WORKDIR /var/www/html
 EXPOSE 9000
 
-CMD ["/var/wwww/init_wordpress.sh"]
+CMD ["/var/www/init_wordpress.sh"]
 
 
 
