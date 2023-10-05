@@ -1,13 +1,20 @@
-#	Allows us to tell Docker under which OS our VM should run
-FROM	debian:bullseye
+FROM    debian:bullseye
 
-#	Allows us to launch a command on our VM
-#	Install MariaDB
-RUN	apt-get update
-RUN	apt install mariadb-server -y
+RUN apt-get update
+RUN apt install mariadb-server -y
+#RUN apt-get install mariadb-server mariadb-client -y
 
-#	Copy MariaDB configuration files
-#	Copy our config file and our script to configure and init mysql database
+#   Create mysql service directory to store data related to mysql service,
+#   such as configuration files, logs, and data files.
+#   we do this to help keep the service data organized
+#   and separate from other system data, to make it easier to manage and backup.
+RUN mkdir -p /var/run/mysqld /var/lib/mysql
+
+RUN chown -R mysql:root /run/mysqld && chown -R mysql:mysql /var/lib/mysql
+
+#   Copy the my.cnf file into the directory /etc/mysql/, in the my 50-server.cnf file we specify the port and set
+#   bind-address=0.0.0.0 to allow the mariadb server to listen for connections from any IP address, including
+#   the IP addresses from other containers and the host machine
 COPY ./conf/50-server.cnf /etc/mysql/mariadb.conf.d/
 
 #   Copy the script in the images and modify the execution rights of it
@@ -17,4 +24,4 @@ COPY ./tools/init_database.sh /tmp/
 RUN chmod +x /tmp/init_database.sh
 
 #   Run MariaDB configuration script as entry point
-ENTRYPOINT	[ "/tmp/init_database.sh" ]
+ENTRYPOINT  [ "bash", "/tmp/init_database.sh" ]

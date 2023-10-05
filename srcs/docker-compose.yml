@@ -18,6 +18,9 @@ services:
             - wordpress:/var/www/html/
         depends_on:
             - wordpress
+        labels:
+            - "my-app=nginx"
+        
 
     mariadb:
         container_name: mariadb
@@ -29,6 +32,8 @@ services:
             - inception
         volumes:
             - mariadb:/var/lib/mysql
+        labels:
+            - "my-app=mariadb"
 
     wordpress:
         container_name: wordpress
@@ -42,6 +47,8 @@ services:
             - wordpress:/var/www/html
         depends_on:
             - mariadb
+        labels:
+            - "my-app=wordpress"
 
 # NETWORK
 networks:
