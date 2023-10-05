@@ -32,19 +32,21 @@ remove_containers:
 		echo "$(BOLD)$(RED)No Docker containers found$(RESET)"; \
 	fi
 
+#docker volume rm $$(docker volume ls -q);
 remove_volumes:
 	@if [ -n "$$(docker volume ls -q)" ]; then \
 		echo "$(YELLOW)\n. . . removing docker volumes . . . \n$(RESET)"; \
-		docker volume rm $$(docker volume ls -q); \
+		docker compose -f $(COMPOSE_FILE) down --volumes; \
 		echo "$(BOLD)$(GREEN)Volumes removed [ ✔ ]\n$(RESET)"; \
 	else \
 		echo "$(BOLD)$(RED)No Docker volumes found$(RESET)"; \
 	fi
 
+#docker rmi -f $$(docker images -aq);
 remove_images:
 	@if [ -n "$$(docker images -aq)" ]; then \
 		echo "$(YELLOW)\n. . . removing docker images . . . \n$(RESET)"; \
-		docker rmi -f $$(docker images -aq); \
+		docker compose -f $(COMPOSE_FILE) down --rmi all; \
 		echo "$(BOLD)$(GREEN)Images removed [ ✔ ]\n$(RESET)"; \
 	else \
 		echo "$(BOLD)$(RED)No Docker images found$(RESET)"; \
