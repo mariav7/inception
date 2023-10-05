@@ -1,8 +1,8 @@
 FROM    debian:bullseye
 
-RUN apt-get update
-RUN apt install mariadb-server -y
-#RUN apt-get install mariadb-server mariadb-client -y
+RUN apt-get update -y && apt-get upgrade -y
+#RUN apt install mariadb-server -y
+RUN apt-get install mariadb-server mariadb-client -y
 
 #   Create mysql service directory to store data related to mysql service,
 #   such as configuration files, logs, and data files.

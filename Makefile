@@ -50,13 +50,6 @@ remove_images:
 		echo "$(BOLD)$(RED)No Docker images found$(RESET)"; \
 	fi
 
-show_logs:
-	@for container in $$(docker ps --filter "label=my-app" --format "{{.Names}}"); do \
-		echo "Logs for $$container:"; \
-		docker logs &&container; \
-	done
-
-
 clean: remove_containers remove_volumes remove_images
 	@echo "$(BOLD)$(GREEN)cleaned [ ✔ ]\n$(RESET)"
 
@@ -69,15 +62,15 @@ fclean: clean
 	fi
 	@echo "$(BOLD)$(GREEN)fcleaned [ ✔ ]\n$(RESET)"
 
-re: fclean all
+re: prune all
 
-prune:
-	@echo "$(YELLOW)\n. . . pruning . . . \n$(RESET)"
+prune: fclean
+	@echo "$(YELLOW)\n. . . pruning docker system . . . \n$(RESET)"
 	@docker system prune -fa
 	@echo "$(BOLD)$(GREEN)Pruned [ ✔ ]\n$(RESET)"
 
 .PHONY: all install restart remove_containers remove_volumes remove_images \
-		clean fclean re prune header check-status show_logs
+		clean fclean re prune header check-status
 
 check-status:
 	@echo "$(YELLOW)docker ps -a $(RESET)" && docker ps -a
