@@ -25,7 +25,7 @@ COPY ./conf/www.conf /etc/php/7.4/fpm/pool.d/
 # RUN mkdir -p /var/www/html && chown -R www-data:www-data /var/www/*
 # RUN chmod -R 755 /var/www/*
 
-# EXPOSE  9000
+EXPOSE  9000
 
 # Move the config script in the docker
 COPY ./tools/init_wordpress.sh /tmp/
