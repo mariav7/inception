@@ -9,80 +9,95 @@ all: header
 	@echo "$(YELLOW)\n. . . Launching . . .\n$(RESET)"
 	@mkdir -p $(DB_PATH)mariadb $(DB_PATH)wordpress
 	@docker compose -f $(COMPOSE_FILE) up --build -d
-	@echo "$(BOLD)$(GREEN)Launched [ ✔ ]\n$(RESET)"
+	@echo "\n$(BOLD)$(GREEN)Launched [ ✔ ]\n$(RESET)"
 
 install:
 	@echo "$(YELLOW)\n. . . apt updating && upgrading . . . \n$(RESET)"
 	@sudo apt-get update 
 	@sudo apt-get upgrade -y
-	@echo "$(BOLD)$(GREEN)apt update && upgrade [ ✔ ]\n$(RESET)"
+	@echo "\n$(BOLD)$(GREEN)apt update && upgrade [ ✔ ]\n$(RESET)"
 
-restart:
-	@echo "$(YELLOW)\n. . . restarting containers . . . \n$(RESET)"
-	@docker compose -f $(COMPOSE_FILE) stop
-	@docker compose -f $(COMPOSE_FILE) start
-	@echo "$(BOLD)$(GREEN)Containers restarted [ ✔ ]\n$(RESET)"
+start:
+	@echo "$(YELLOW)\n. . . starting containers . . . \n$(RESET)";
+	@if [ -n "$$(docker ps -aq)" ]; then \
+		docker compose -f $(COMPOSE_FILE) start; \
+		echo "\n$(BOLD)$(GREEN)Containers started [ ✔ ]\n$(RESET)"; \
+	else \
+		echo "\n$(BOLD)$(RED)No Docker containers found.$(RESET)\n"; \
+	fi
+
+stop:
+	@echo "$(YELLOW)\n. . . stopping containers . . . \n$(RESET)";
+	@if [ -n "$$(docker ps -aq)" ]; then \
+		docker compose -f $(COMPOSE_FILE) stop; \
+		echo "\n$(BOLD)$(GREEN)Containers stopped [ ✔ ]\n$(RESET)"; \
+	else \
+		echo "\n$(BOLD)$(RED)No Docker containers found.$(RESET)\n"; \
+	fi
+
+restart: stop start
+	@if [ -n "$$(docker ps -aq)" ]; then \
+		echo "\n$(BOLD)$(GREEN)Containers restarted [ ✔ ]\n$(RESET)"; \
+	fi
 
 remove_containers:
 	@if [ -n "$$(docker ps -aq)" ]; then \
 		echo "$(YELLOW)\n. . . stopping and removing docker containers . . . \n$(RESET)"; \
 		docker compose -f $(COMPOSE_FILE) down; \
-		echo "$(BOLD)$(GREEN)Containers stopped and removed [ ✔ ]\n$(RESET)"; \
+		echo "\n$(BOLD)$(GREEN)Containers stopped and removed [ ✔ ]\n$(RESET)"; \
 	else \
-		echo "$(BOLD)$(RED)No Docker containers found$(RESET)"; \
+		echo "\n$(BOLD)$(RED)No Docker containers found.$(RESET)\n"; \
 	fi
 
-#docker volume rm $$(docker volume ls -q);
 remove_volumes:
 	@if [ -n "$$(docker volume ls -q)" ]; then \
 		echo "$(YELLOW)\n. . . removing docker volumes . . . \n$(RESET)"; \
 		docker compose -f $(COMPOSE_FILE) down --volumes; \
-		echo "$(BOLD)$(GREEN)Volumes removed [ ✔ ]\n$(RESET)"; \
+		echo "\n$(BOLD)$(GREEN)Volumes removed [ ✔ ]\n$(RESET)"; \
 	else \
-		echo "$(BOLD)$(RED)No Docker volumes found$(RESET)"; \
+		echo "\n$(BOLD)$(RED)No Docker volumes found.\n$(RESET)"; \
 	fi
 
-#docker rmi -f $$(docker images -aq);
 remove_images:
 	@if [ -n "$$(docker images -aq)" ]; then \
 		echo "$(YELLOW)\n. . . removing docker images . . . \n$(RESET)"; \
 		docker compose -f $(COMPOSE_FILE) down --rmi all; \
-		echo "$(BOLD)$(GREEN)Images removed [ ✔ ]\n$(RESET)"; \
+		echo "\n$(BOLD)$(GREEN)Images removed [ ✔ ]\n$(RESET)"; \
 	else \
-		echo "$(BOLD)$(RED)No Docker images found$(RESET)"; \
+		echo "\n$(BOLD)$(RED)No Docker images found.\n$(RESET)"; \
 	fi
 
 clean: remove_containers remove_volumes remove_images
-	@echo "$(BOLD)$(GREEN)cleaned [ ✔ ]\n$(RESET)"
+	@echo "\n$(BOLD)$(GREEN)cleaned [ ✔ ]\n$(RESET)"
 
-fclean: clean
+fclean: clean prune
 	@if [ -d $(DB_PATH) ]; then \
 		echo "$(YELLOW)\n. . . deleting $(DB_PATH) . . . \n$(RESET)"; \
 		sudo rm -rdf $(DB_PATH); \
 	else \
-		echo "$(BOLD)$(RED)No $(DB_PATH) found$(RESET)"; \
+		echo "\n$(BOLD)$(RED)No $(DB_PATH) found$(RESET)"; \
 	fi
-	@echo "$(BOLD)$(GREEN)fcleaned [ ✔ ]\n$(RESET)"
+	@echo "\n$(BOLD)$(GREEN)fcleaned [ ✔ ]\n$(RESET)"
 
-re: prune all
+re: fclean all
 
-prune: fclean
+prune:
 	@echo "$(YELLOW)\n. . . pruning docker system . . . \n$(RESET)"
 	@docker system prune -fa
-	@echo "$(BOLD)$(GREEN)Pruned [ ✔ ]\n$(RESET)"
+	@echo "\n$(BOLD)$(GREEN)Pruned [ ✔ ]\n$(RESET)"
 
 .PHONY: all install restart remove_containers remove_volumes remove_images \
-		clean fclean re prune header check-status
+		clean fclean re prune header check-status start stop
 
 check-status:
-	@echo "$(YELLOW)docker ps -a $(RESET)" && docker ps -a
-	@echo "$(YELLOW)docker volume ls $(RESET)" && docker volume ls
-	@echo "$(YELLOW)docker images -a $(RESET)" && docker images -a
-	@echo "$(YELLOW)docker network ls $(RESET)" && docker network ls
+	@echo "\n$(YELLOW)docker ps -a $(RESET)" && docker ps -a
+	@echo "\n$(YELLOW)docker volume ls $(RESET)" && docker volume ls
+	@echo "\n$(YELLOW)docker images -a $(RESET)" && docker images -a
+	@echo "\n$(YELLOW)docker network ls $(RESET)" && docker network ls
 	@if [ -d $(DB_PATH) ]; then \
-		echo "$(YELLOW)ls -la $(DB_PATH) $(RESET)" && ls -la $(DB_PATH); \
+		echo "\n$(YELLOW)ls -la $(DB_PATH) $(RESET)" && ls -la $(DB_PATH); \
 	else \
-		echo "$(YELLOW)ls -la $(DB_PATH) \n$(RESET)No $(DB_PATH) found."; \
+		echo "\n$(YELLOW)ls -la $(DB_PATH) \n$(RESET)No $(DB_PATH) found."; \
 	fi
 
 define HEADER_PROJECT

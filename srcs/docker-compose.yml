@@ -46,7 +46,7 @@ services:
 # NETWORK
 networks:
     inception:
-        #name:   inception
+        name:   inception
         driver: bridge
 
 # VOLUMES
