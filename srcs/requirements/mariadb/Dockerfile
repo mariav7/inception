@@ -10,7 +10,8 @@ RUN apt-get install mariadb-server mariadb-client -y
 #   and separate from other system data, to make it easier to manage and backup.
 RUN mkdir -p /var/run/mysqld /var/lib/mysql
 
-RUN chown -R mysql:root /run/mysqld && chown -R mysql:mysql /var/lib/mysql
+RUN chown -R mysql:root /run/mysqld
+RUN chown -R mysql:mysql /var/lib/mysql
 
 #   Copy the my.cnf file into the directory /etc/mysql/, in the my 50-server.cnf file we specify the port and set
 #   bind-address=0.0.0.0 to allow the mariadb server to listen for connections from any IP address, including
