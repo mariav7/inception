@@ -1,6 +1,6 @@
 #   This file .yml allows us to give the specific instructions to docker-compose 
 #   on how to manage these different services (images)
-version: "3.5"
+version: "3.8"
 
 # Definition of the different services (images) to use 
 services:
@@ -9,7 +9,6 @@ services:
         build:          requirements/nginx/
         image:          nginx
         restart:        always # allows the container to restart in case of crash
-        env_file:       .env # defines the optional file containing the environment
         networks:
             - inception
         ports:          # port in use
@@ -24,7 +23,7 @@ services:
         build:          requirements/mariadb/
         image:          mariadb
         restart:        always
-        env_file:       .env
+        env_file:       .env # defines the optional file containing the environment
         networks:
             - inception
         volumes:

@@ -2,6 +2,8 @@
 
 if [ ! -f /var/www/html/wp-config.php ]; then
 
+    sleep 10
+
     cd /var/www/html
 
     wp core download --allow-root
@@ -24,7 +26,8 @@ if [ ! -f /var/www/html/wp-config.php ]; then
                     --role=${WP_USER_ROLE} \
                     --allow-root
 
-    wp theme activate twentytwentytwo --allow-root 
+    wp theme activate twentytwentytwo --allow-root
+
 fi
 
 php-fpm7.4 -F -R
