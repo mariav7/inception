@@ -1,12 +1,6 @@
 #!/bin/sh
 
 if [ ! -f /var/www/html/wp-config.php ]; then
-#     until mysqladmin -h${BDD_HOST} -u root -p${BDD_ROOT_PASSWORD} ping; do
-#         sleep 2
-#     done
-
-# sleep 10
-# if [ ! -f /var/www/html/wp-config.php ]; then
 
     cd /var/www/html
 
