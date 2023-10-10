@@ -1,24 +1,39 @@
 #!/bin/sh
-service mariadb start
 
-sleep 2
+# Check if MariaDB is already running
+if ! service mariadb status > /dev/null; then
+    echo "=> MariaDB is not running, starting it..."
+    service mariadb start
+else
+    echo "=> MariaDB is already running."
+fi
 
-# CREATE WORDPRESS DATABASE
-echo "CREATE DATABASE IF NOT EXISTS $BDD_NAME;" | mysql
+echo "=> Check for \`$BDD_NAME\` database..."
+#   Check if the wordpress database is already created
+if [ ! -d "/var/lib/mysql/$BDD_NAME" ]; then
 
-# CREATE USER
-echo "CREATE USER IF NOT EXISTS '$BDD_USER'@'%' IDENTIFIED BY '$BDD_USER_PASSWORD';" | mysql
+    sleep 2
 
-# PRIVILEGES USER FOR ALL IP ADRESSES
-echo "GRANT ALL PRIVILEGES ON *.* TO '$BDD_USER'@'%' IDENTIFIED BY '$BDD_USER_PASSWORD';" | mysql
+    # CREATE WORDPRESS DATABASE
+    mysql -e "CREATE DATABASE IF NOT EXISTS $BDD_NAME;"
 
-echo "FLUSH PRIVILEGES;" | mysql
+    # CREATE USER
+    mysql -e "CREATE USER IF NOT EXISTS '$BDD_USER'@'%' IDENTIFIED BY '$BDD_USER_PASSWORD';"
 
-# FORCE AUTHENTIFICATION WITH PASSWORD FOR ROOT
-echo "ALTER USER 'root'@'localhost' IDENTIFIED BY '$BDD_ROOT_PASSWORD';" | mysql
+    # PRIVILEGES USER FOR ALL IP ADRESSES
+    mysql -e "GRANT ALL PRIVILEGES ON *.* TO '$BDD_USER'@'%' IDENTIFIED BY '$BDD_USER_PASSWORD';"
 
-kill $(cat /var/run/mysqld/mysqld.pid)
+    mysql -e "FLUSH PRIVILEGES;"
 
-mysqld
+    # FORCE AUTHENTIFICATION WITH PASSWORD FOR ROOT
+    mysql -e "ALTER USER 'root'@'localhost' IDENTIFIED BY '$BDD_ROOT_PASSWORD';"
 
-echo "MariaDB database and user were created successfully! "
+    echo "=> MariaDB database and user were created successfully! "
+fi
+
+# Shutdown MariaDB gracefully if it was started in this script
+if [ -f /var/run/mysqld/mysqld.pid ]; then
+    echo "=> Shutting down MariaDB..."
+    kill $(cat /var/run/mysqld/mysqld.pid)
+    exec mysqld
+fi
