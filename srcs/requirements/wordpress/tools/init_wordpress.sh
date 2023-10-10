@@ -2,29 +2,20 @@
 
 sleep 10
 
-cd /var/www/html
-
-# Avoid PHP running problems
-if [ ! -d "/run/php" ]; then
-	mkdir -p /run/php
-fi
+cd $WP_PATH_DIR
 
 #   Check if WordPress is installed
 echo "=> Checking for WordPress installation..."
-
-if [ ! -f "wp-config-sample.php" ]; then
-	echo "=> Downloading wordpress..."
-	wp core download --allow-root
-	echo "=> Done!"
-fi
-
 if [ ! -f "wp-config.php" ]; then
+
+    echo "=> Downloading wordpress..."
+	wp core download --allow-root
 
 	echo "=> Create config file . . ."
     wp config create --dbname=${BDD_NAME} \
                     --dbuser=${BDD_USER} \
                     --dbpass=${BDD_USER_PASSWORD} \
-                    --dbhost=${BDD_HOST} --path='/var/www/html' \
+                    --dbhost=${BDD_HOST} --path=${WP_PATH_DIR} \
                     --allow-root
 	echo "=> Done!"
 
