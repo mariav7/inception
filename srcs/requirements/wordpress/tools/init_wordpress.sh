@@ -1,7 +1,5 @@
 #!/bin/sh
 
-echo "=> Waiting 10 seconds before starting initialization script..."
-
 sleep 10
 
 cd /var/www/html
@@ -11,6 +9,7 @@ if [ ! -d "/run/php" ]; then
 	mkdir -p /run/php
 fi
 
+#   Check if WordPress is installed
 echo "=> Checking for WordPress installation..."
 
 if [ ! -f "wp-config-sample.php" ]; then
@@ -25,7 +24,7 @@ if [ ! -f "wp-config.php" ]; then
     wp config create --dbname=${BDD_NAME} \
                     --dbuser=${BDD_USER} \
                     --dbpass=${BDD_USER_PASSWORD} \
-                    --dbhost=${BDD_HOST}:3306 --path='/var/www/html' \
+                    --dbhost=${BDD_HOST} --path='/var/www/html' \
                     --allow-root
 	echo "=> Done!"
 

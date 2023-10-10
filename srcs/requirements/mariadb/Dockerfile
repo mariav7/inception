@@ -8,19 +8,7 @@ RUN apt-get install mariadb-server mariadb-client -y
 #   such as configuration files, logs, and data files.
 #   We do this to help keep the service data organized
 #   and separate from other system data, to make it easier to manage and backup.
-# RUN mkdir -p /run/mysqld /var/lib/mysql
-#RUN chown -R mysql:root /run/mysqld
-# RUN chown -R mysql:mysql /run/mysqld /var/lib/mysql
-
-RUN mkdir -p /var/run/mysqld && \
-    chown -R mysql:mysql /var/run/mysqld && \
-    chmod -R 755 /var/run/mysqld && \
-    mkdir -p /var/lib/mysql && \
-    chown -R mysql:mysql /var/lib/mysql && \
-    chmod -R 755 /var/lib/mysql && \
-    mkdir -p /var/log/mysql && \
-    chown -R mysql:mysql /var/log/mysql && \
-    chmod -R 755 /var/log/mysql
+RUN mkdir -p /run/mysqld && chown -R mysql:root /run/mysqld
 
 #   mysql_install_db, script provided by the mysql package that is used to initialize
 #   the directory for a mysql database server
@@ -34,9 +22,6 @@ RUN mkdir -p /var/run/mysqld && \
 #   Copy the my.cnf file into the directory /etc/mysql/, in the my 50-server.cnf file we specify the port and set
 #   bind-address=0.0.0.0 to allow the mariadb server to listen for connections from any IP address, including
 #   the IP addresses from other containers and the host machine
-# COPY    ./conf/50-server.cnf /etc/mysql/mariadb.conf.d/
-
-COPY ./conf/50-server.cnf /etc/mysql/
 COPY ./conf/50-server.cnf /etc/mysql/mariadb.conf.d/
 
 #   Copy the script in the docker image

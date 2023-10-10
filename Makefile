@@ -86,10 +86,7 @@ prune:
 	@docker system prune -fa
 	@echo "\n$(BOLD)$(GREEN)Pruned [ ✔ ]\n$(RESET)"
 
-.PHONY: all install restart remove_containers remove_volumes remove_images \
-		clean fclean re prune header check-status start stop
-
-check-status:
+check_status:
 	@echo "\n$(YELLOW)docker ps -a $(RESET)" && docker ps -a
 	@echo "\n$(YELLOW)docker volume ls $(RESET)" && docker volume ls
 	@echo "\n$(YELLOW)docker images -a $(RESET)" && docker images -a
@@ -99,6 +96,19 @@ check-status:
 	else \
 		echo "\n$(YELLOW)ls -la $(DB_PATH) \n$(RESET)No $(DB_PATH) found."; \
 	fi
+
+check_logs:
+	@if [ -n "$$(docker ps -aq)" ]; then \
+		echo "$(YELLOW)\n. . . showing docker logs . . . \n$(RESET)"; \
+		echo "\n$(YELLOW)Nginx logs:$(RESET)"; docker logs nginx; \
+		echo "\n$(YELLOW)Mariadb logs:$(RESET)"; docker logs mariadb; \
+		echo "\n$(YELLOW)WordPress logs:$(RESET)"; docker logs wordpress; \
+	else \
+		echo "\n$(BOLD)$(RED)No Docker containers found.$(RESET)\n"; \
+	fi
+
+.PHONY: all install restart remove_containers remove_volumes remove_images \
+		clean fclean re prune header check_status check_logs start stop
 
 define HEADER_PROJECT
 
