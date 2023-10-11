@@ -1,12 +1,12 @@
 #!/bin/sh
 
-sleep 10
-
 cd $WP_PATH_DIR
 
 #   Check if WordPress is installed
 echo "=> Checking for WordPress installation..."
 if [ ! -f "wp-config.php" ]; then
+
+    sleep 10
 
     echo "=> Downloading wordpress..."
 	wp core download --allow-root
@@ -38,7 +38,8 @@ if [ ! -f "wp-config.php" ]; then
 
     echo "=> Activating WordPress theme . . ."
     wp theme activate twentytwentytwo --allow-root
-
+else
+    echo "=> WordPress already installed and configured!"
 fi
 
 php-fpm7.4 -F -R
